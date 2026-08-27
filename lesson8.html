@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Python ඉගෙන ගනිමු | පාඩම 08</title>
+    <title>Python ඉගෙන ගනිමු | පාඩම 09</title>
     
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
     
@@ -120,14 +120,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        /* Disabled Button Style */
-        .locked-btn {
-            background: #adb5bd !important;
-            cursor: not-allowed;
-            pointer-events: none;
-            box-shadow: none !important;
-        }
-
         .editor-panel {
             flex: 1;
             min-width: 350px;
@@ -192,38 +184,54 @@
 
     <header>
         <h2>සිංහලෙන් Python</h2>
-        <span class="lesson-badge">පාඩම 08 : පුනරාවර්තනය (Loops)</span>
+        <span class="lesson-badge">පාඩම 09 : ලැයිස්තු (Lists)</span>
     </header>
 
     <div class="container">
         <div class="lesson-panel">
-            <h2>පහසු ක්‍රමය ඉගෙනගන්න කලින්... 🔨</h2>
-            <p>දකුණු පස ඇති කේත සංස්කාරකයේ, <code>print()</code> ශ්‍රිතය භාවිතා කර <b>1 සිට 10 දක්වා අංක එකින් එක පහළට</b> Print කරන්න. <br><i>(උදා: print(1), print(2) ආදී වශයෙන් පේළි 10ක් ලියන්න).</i></p>
+            <h2>ලැයිස්තුවක් (List) යනු කුමක්ද?</h2>
+            <p>සාමාන්‍යයෙන් Variable (විචල්‍ය) එකක ගබඩා කරන්න පුළුවන් එක දත්තයක් විතරයි. නමුත් අපිට දත්ත ගොඩක් එකවර ගබඩා කරගන්න ඕනේ නම් අපි <b>List</b> එකක් භාවිතා කරනවා. හරියට කඩේට යනකොට හදාගන්න බඩු ලැයිස්තුවක් වගේ.</p>
             
-            <div class="rule-box">
-                <b>🔒 අභියෝගය:</b> මෙම අභ්‍යාසය නිවැරදිව අවසන් කර 'Run Code' එබූ පසු පමණක් ඔබට මීළඟ පාඩමට යාමට ඇති බොත්තම විවෘත වනු ඇත!
+            <p>List එකක් හදන්නේ කොටු වරහන් <code>[]</code> භාවිතා කරලයි.</p>
+            
+            <div class="info-box">
+                <b>උදාහරණ:</b><br>
+                <code>fruits = ["Apple", "Banana", "Mango"]</code><br>
+                <code>marks = [75, 80, 95]</code>
             </div>
+
+            <h3>ඔබේ පළමු අභ්‍යාසය 💻:</h3>
+            <p><code>colors</code> නමින් List එකක් සාදා, ඊට ඔබේ කැමතිම පාට 3ක් (String ලෙස) ඇතුළත් කර <code>print(colors)</code> මගින් එය පෙන්වන්න.</p>
 
             <hr style="border: 1px solid #eee; margin: 25px 0;">
 
-            <h2>ඇයි අපිට මේක අමාරු?</h2>
-            <p>දැන් හිතන්න මම ඔබට කිව්වොත් <b>1 ඉඳන් 1000 වෙනකන්</b> Print කරන්න කියලා? පේළි 1000ක් අතින් ලියන එක කොච්චර නම් මහන්සි වෙන, එපා වෙන වැඩක්ද නේද?</p>
-            
-            <p>මෙන්න මේ වගේ එකම වැඩේ (හෝ එකම කේතය) නැවත නැවත ක්‍රියාත්මක කරන්න තියෙනකොට, අපි පරිගණකයට දෙන ලේසිම ක්‍රමය තමයි <b>Loops (පුනරාවර්තනය)</b> කියන්නේ.</p>
+            <h2>List එකක් වෙනස් කිරීම (List Operations)</h2>
+            <p>හදාගත්ත List එකක් අපිට ඕනේ විදිහට පාලනය කරන්න විශේෂ ක්‍රම (Syntax) කිහිපයක් තියෙනවා:</p>
 
-            <div class="info-box">
-                <h3>Python හි ප්‍රධාන Loops වර්ග 2කි:</h3>
-                <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                    <li><b>For Loop:</b> අපිට හරියටම වාර ගණනක් (උදා: 10 වතාවක් හෝ 100 වතාවක්) යම් වැඩක් කරන්න ඕනේ නම් අපි මෙය භාවිතා කරමු.</li>
-                    <li><b>While Loop:</b> යම්කිසි කොන්දේසියක් (Condition) සපිරෙනකන් දිගටම යම් වැඩක් කරන්න ඕනේ නම් අපි මෙය භාවිතා කරමු.</li>
-                </ol>
+            <div class="rule-box">
+                <b>1. Index (ස්ථානය):</b> <br>
+                පරිගණකය ගණන් කරන්න පටන් ගන්නේ 1න් නෙමෙයි, 0න්. ඒ නිසා List එකක පළවෙනි අයිතමය තියෙන්නේ <b>0 වෙනි ස්ථානයේයි (Index 0)</b>.<br>
+                <code>print(fruits[0])</code> ➔ Apple
             </div>
-            <p>මීළඟ පාඩමෙන් අපි මේ අමාරු වැඩේ ලේසියෙන්ම Loop එකක් පාවිච්චි කරලා කරන්නේ කොහොමද කියලා ඉගෙන ගනිමු!</p>
+
+            <ul style="line-height: 1.8;">
+                <li><b>අලුතින් යමක් එකතු කිරීමට (Append):</b><br> <code>fruits.append("Orange")</code> අගට එකතු වෙයි.</li>
+                <li><b>යමක් ඉවත් කිරීමට (Remove):</b><br> <code>fruits.remove("Banana")</code></li>
+                <li><b>List එකේ දිග සෙවීමට (Length):</b><br> <code>print(len(fruits))</code> (මෙහි අයිතම කීයක් ඇද්දැයි ඉලක්කමෙන් පෙන්වයි).</li>
+            </ul>
+
+            <h3>ඔබේ දෙවන අභ්‍යාසය 💻:</h3>
+            <p>දකුණු පස ඇති කේතයේ <code>numbers</code> නමින් List එකක් සාදා ඇත.</p>
+            <ol>
+                <li>එම List එකට <b>40</b> අලුතින් එකතු කරන්න (Append භාවිතා කර).</li>
+                <li>ඉන්පසු එම List එකේ ඇති <b>පළමු අගය</b> (එනම් 10) පමණක් Index එක භාවිතා කර print කරන්න.</li>
+                <li>අවසානයේ List එකේ මුළු දිග (Length එක) කීයදැයි print කරන්න.</li>
+            </ol>
 
             <div class="nav-buttons">
-                <a href="lesson7.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
+                <a href="lesson8.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
                 
-                <a href="lesson9.html" id="nextBtn" class="nav-btn locked-btn">ඊළඟ පාඩමට ➡️ (Locked)</a>
+                <a href="lesson10.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
             </div>
         </div>
 
@@ -234,10 +242,21 @@
             </div>
             
             <textarea id="code">
-# 1 සිට 10 දක්වා පහළින් print කරන්න
-print(1)
-print(2)
+# --- අභ්‍යාසය 01 ---
+colors = 
+print(colors)
 
+
+# --- අභ්‍යාසය 02 ---
+numbers = [10, 20, 30]
+
+# 1. 40 අලුතින් එකතු කරන්න
+
+
+# 2. පළමු අගය (10) පමණක් print කරන්න
+
+
+# 3. List එකේ දිග (Length) print කරන්න
 
             </textarea>
             
@@ -293,21 +312,6 @@ sys.stdout = io.StringIO()
                 
                 let stdout = pyodide.runPython("sys.stdout.getvalue()");
                 outputElement.innerText = stdout || "Execution finished. (No output printed)";
-                
-                // --- Unlock Logic Starts Here ---
-                // Remove all spaces and newlines from output to check the sequence
-                let cleanOutput = stdout.replace(/\s+/g, '');
-                
-                // If output matches exactly 1 to 10
-                if (cleanOutput === "12345678910") {
-                    let nextBtn = document.getElementById("nextBtn");
-                    nextBtn.classList.remove("locked-btn");
-                    nextBtn.innerText = "ඊළඟ පාඩමට ➡️";
-                    
-                    outputElement.innerText += "\n\n🎉 නියමයි! ඔබ අභියෝගය ජය ගත්තා. දැන් 'ඊළඟ පාඩමට' බොත්තම ඔබන්න.";
-                    outputElement.style.color = "#00ff00";
-                }
-                // --- Unlock Logic Ends Here ---
                 
             } catch (err) {
                 outputElement.innerText = err;
