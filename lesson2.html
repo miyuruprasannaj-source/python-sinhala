@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python ඉගෙන ගනිමු | පාඩම 02</title>
     
-    <!-- Pyodide (Python in Browser) -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
     
-    <!-- CodeMirror (Professional Code Editor Libraries) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
 
     <style>
-        /* CSS Variables for standardizing colors */
         :root {
             --bg-color: #f4f7f6;
             --text-color: #333;
@@ -26,6 +23,7 @@
             --panel-bg: #ffffff;
         }
 
+        /* 100vh සීමාවෙන් පිටතට යෑම නැවැත්වීම */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -35,9 +33,9 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden; 
         }
 
-        /* Modern Header */
         header {
             background: var(--header-bg);
             color: white;
@@ -56,10 +54,8 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            flex-wrap: wrap;
         }
 
-        /* Theory Panel Styling */
         .lesson-panel {
             flex: 1.2;
             min-width: 350px;
@@ -90,7 +86,6 @@
             border: 1px solid #ddd;
         }
 
-        /* Navigation Buttons */
         .nav-buttons {
             margin-top: 40px;
             display: flex;
@@ -118,21 +113,20 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        /* Editor Panel Styling */
+        /* Editor එක කොටුවෙන් පිටතට යෑම නැවැත්වීම */
         .editor-panel {
             flex: 1;
             min-width: 350px;
             display: flex;
             flex-direction: column;
             background: #1e1e1e;
-            /* Software Engineering Fix: Prevents Flexbox from overflowing */
-            min-height: 0; 
+            overflow: hidden;
         }
         
+        /* CodeMirror උස බලහත්කාරයෙන් 100% කිරීම (!important) */
         .CodeMirror {
             flex: 1;
-            /* Software Engineering Fix: Forces CodeMirror to scroll inside its flex container */
-            height: 0; 
+            height: 100% !important; 
             font-size: 16px;
             font-family: 'Consolas', 'Courier New', monospace;
         }
@@ -166,8 +160,9 @@
         
         #status { color: #ffc107; font-size: 14px; font-weight: 500; }
         
-        /* Terminal Styling */
+        /* Terminal එක කිසිම විටෙක shrink වීම නැවැත්වීම */
         .terminal {
+            flex: 0 0 180px; 
             height: 180px;
             background: #0c0c0c;
             color: #00ff00;
@@ -212,12 +207,8 @@
             </ol>
             <p>මෙම ගණනය කිරීම් දෙකම එකවර බලාගැනීම සඳහා <code>print()</code> ශ්‍රිත දෙකක් පේළි දෙකකින් ලියා 'Run Code' ඔබන්න.</p>
 
-            <!-- Navigation Buttons Added Here -->
             <div class="nav-buttons">
-                <!-- Links back to Lesson 1 (index.html) -->
                 <a href="index.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
-                
-                <!-- Links forward to Lesson 3 (lesson3.html) -->
                 <a href="lesson3.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
             </div>
         </div>
@@ -241,7 +232,6 @@ print( ... )
     </div>
 
     <script>
-        // 1. Initialize CodeMirror Editor
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             mode: "python",
             theme: "monokai",
@@ -251,7 +241,6 @@ print( ... )
             fontSize: "16px"
         });
 
-        // 2. Load Pyodide asynchronously
         let pyodideReadyPromise = loadPyodide();
         
         async function setup() {
@@ -270,7 +259,6 @@ print( ... )
         }
         setup();
 
-        // 3. Execute User Code
         async function executePython() {
             let code = editor.getValue();
             let outputElement = document.getElementById("output");
@@ -281,27 +269,22 @@ print( ... )
             runBtn.disabled = true;
 
             try {
-                // Redirect python print() output to our virtual terminal
                 pyodide.runPython(`
 import sys
 import io
 sys.stdout = io.StringIO()
                 `);
                 
-                // Run the actual code written by the user
                 pyodide.runPython(code);
                 
-                // Fetch the output
                 let stdout = pyodide.runPython("sys.stdout.getvalue()");
                 outputElement.innerText = stdout || "Execution finished. (No output printed)";
                 
             } catch (err) {
-                // Catch Syntax Errors and exceptions
                 outputElement.innerText = err;
                 outputElement.classList.add("error");
             }
             
-            // Re-enable the run button
             runBtn.disabled = false;
         }
     </script>
