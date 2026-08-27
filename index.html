@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | පාඩම 01</title>
+    
+    <!-- Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <!-- CodeMirror (Code Editor Library) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --primary: #0275d8;
+            --success: #28a745;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            flex-wrap: wrap; /* For mobile responsiveness */
+        }
+        /* Left Panel - Theory */
+        .lesson-panel {
+            flex: 1;
+            min-width: 300px;
+            padding: 25px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            background: white;
+        }
+        /* Right Panel - Code Editor */
+        .editor-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+        }
+        .CodeMirror {
+            flex: 1;
+            font-size: 15px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .toolbar {
+            background: #333;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background: #218838;
+        }
+        #status {
+            color: #ffc107;
+            font-size: 13px;
+        }
+        /* Terminal Output */
+        .terminal {
+            height: 150px;
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 14px;
+            border-top: 2px solid #555;
+            margin: 0;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 style="margin: 0;">සිංහලෙන් Python - පාඩම 01</h2>
+    </header>
+
+    <div class="container">
+        <!-- Theory Panel -->
+        <div class="lesson-panel">
+            <h2>පළමු වැඩසටහන: Print කිරීම</h2>
+            <p>පරිගණකයේ තිරය මත යම්කිසි දෙයක් පෙන්වීමට අපි <code>print()</code> ශ්‍රිතය (Function) භාවිතා කරමු.</p>
+            
+            <h3>උදාහරණ:</h3>
+            <pre style="background: #eee; padding: 10px; border-radius: 5px;"><code>print("Hello World")</code></pre>
+            
+            <h3>ඔබේ අභ්‍යාසය:</h3>
+            <p>දකුණු පස ඇති කේත සංස්කාරකයේ (Code Editor), <strong>ඔබේ නම</strong> print වන සේ කේතය ලියා 'Run Code' බොත්තම ඔබන්න.</p>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... කරුණාකර රැඳී සිටින්න ⏳</span>
+                <button id="runBtn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# මෙහි ඔබේ කේතය ලියන්න
+print("මගේ නම ...")
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        // 1. Initialize CodeMirror (Professional Editor)
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true
+        });
+
+        // 2. Load Pyodide Asynchronously
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                document.getElementById("status").innerText = "Ready ✔️";
+                document.getElementById("status").style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                document.getElementById("status").innerText = "Error loading Python!";
+                document.getElementById("status").style.color = "red";
+            }
+        }
+        setup();
+
+        // 3. Execute Code
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                // Redirect python print() standard output to JavaScript
+                pyodide.runPython(`
+import sys
+import io
+sys.stdout = io.StringIO()
+                `);
+                
+                // Run user code
+                pyodide.runPython(code);
+                
+                // Get output
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished with no output.";
+                
+            } catch (err) {
+                // Handle Syntax errors / Exceptions cleanly
+                outputElement.innerText = err;
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
