@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Python ඉගෙන ගනිමු | පාඩම 01</title>
     
-    <!-- Pyodide -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
     
-    <!-- CodeMirror (Code Editor Library) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
@@ -16,11 +14,15 @@
 
     <style>
         :root {
-            --bg-color: #f8f9fa;
+            --bg-color: #f4f7f6;
             --text-color: #333;
-            --primary: #0275d8;
-            --success: #28a745;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -31,81 +33,138 @@
             flex-direction: column;
             height: 100vh;
         }
+
         header {
-            background: #2c3e50;
+            background: var(--header-bg);
             color: white;
-            padding: 15px 20px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
         }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--secondary-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+
         .container {
             display: flex;
             flex: 1;
             overflow: hidden;
-            flex-wrap: wrap; /* For mobile responsiveness */
+            flex-wrap: wrap;
         }
-        /* Left Panel - Theory */
+
         .lesson-panel {
-            flex: 1;
-            min-width: 300px;
-            padding: 25px;
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
             overflow-y: auto;
-            border-right: 1px solid #ddd;
-            background: white;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
         }
-        /* Right Panel - Code Editor */
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end; /* Align right since there's no prev button */
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
         .editor-panel {
             flex: 1;
-            min-width: 300px;
+            min-width: 350px;
             display: flex;
             flex-direction: column;
             background: #1e1e1e;
         }
+        
         .CodeMirror {
             flex: 1;
-            font-size: 15px;
+            font-size: 16px;
             font-family: 'Consolas', 'Courier New', monospace;
         }
+        
         .toolbar {
-            background: #333;
-            padding: 10px;
+            background: #2d2d2d;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #444;
         }
-        button {
-            background: var(--success);
+        
+        button.run-btn {
+            background: var(--success-color);
             color: white;
             border: none;
-            padding: 8px 20px;
-            font-size: 14px;
-            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        button:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        button:hover:not(:disabled) {
-            background: #218838;
-        }
-        #status {
-            color: #ffc107;
-            font-size: 13px;
-        }
-        /* Terminal Output */
+        
+        button.run-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
         .terminal {
-            height: 150px;
-            background: #000;
-            color: #0f0;
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
             padding: 15px;
             font-family: 'Consolas', monospace;
             overflow-y: auto;
-            font-size: 14px;
-            border-top: 2px solid #555;
+            font-size: 15px;
             margin: 0;
+            border-top: 3px solid #333;
         }
         .error { color: #ff4c4c; }
     </style>
@@ -113,7 +172,8 @@
 <body>
 
     <header>
-        <h2 style="margin: 0;">සිංහලෙන් Python - පාඩම 01</h2>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">පාඩම 01 : Print කිරීම</span>
     </header>
 
     <div class="container">
@@ -122,18 +182,25 @@
             <h2>පළමු වැඩසටහන: Print කිරීම</h2>
             <p>පරිගණකයේ තිරය මත යම්කිසි දෙයක් පෙන්වීමට අපි <code>print()</code> ශ්‍රිතය (Function) භාවිතා කරමු.</p>
             
-            <h3>උදාහරණ:</h3>
-            <pre style="background: #eee; padding: 10px; border-radius: 5px;"><code>print("Hello World")</code></pre>
+            <div class="info-box">
+                <b>උදාහරණ:</b><br>
+                <code>print("Hello World")</code>
+            </div>
             
-            <h3>ඔබේ අභ්‍යාසය:</h3>
+            <h3>ඔබේ අභ්‍යාසය 💻:</h3>
             <p>දකුණු පස ඇති කේත සංස්කාරකයේ (Code Editor), <strong>ඔබේ නම</strong> print වන සේ කේතය ලියා 'Run Code' බොත්තම ඔබන්න.</p>
+
+            <div class="nav-buttons">
+                <!-- Links to Lesson 2 -->
+                <a href="lesson2.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
+            </div>
         </div>
 
         <!-- Code Editor Panel -->
         <div class="editor-panel">
             <div class="toolbar">
-                <span id="status">Python Loading... කරුණාකර රැඳී සිටින්න ⏳</span>
-                <button id="runBtn" onclick="executePython()" disabled>▶ Run Code</button>
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
             </div>
             
             <textarea id="code">
@@ -146,32 +213,32 @@ print("මගේ නම ...")
     </div>
 
     <script>
-        // 1. Initialize CodeMirror (Professional Editor)
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
             mode: "python",
             theme: "monokai",
             lineNumbers: true,
             indentUnit: 4,
-            matchBrackets: true
+            matchBrackets: true,
+            fontSize: "16px"
         });
 
-        // 2. Load Pyodide Asynchronously
         let pyodideReadyPromise = loadPyodide();
         
         async function setup() {
             try {
                 window.pyodide = await pyodideReadyPromise;
-                document.getElementById("status").innerText = "Ready ✔️";
-                document.getElementById("status").style.color = "#28a745";
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
                 document.getElementById("runBtn").disabled = false;
             } catch (err) {
-                document.getElementById("status").innerText = "Error loading Python!";
-                document.getElementById("status").style.color = "red";
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
             }
         }
         setup();
 
-        // 3. Execute Code
         async function executePython() {
             let code = editor.getValue();
             let outputElement = document.getElementById("output");
@@ -182,22 +249,18 @@ print("මගේ නම ...")
             runBtn.disabled = true;
 
             try {
-                // Redirect python print() standard output to JavaScript
                 pyodide.runPython(`
 import sys
 import io
 sys.stdout = io.StringIO()
                 `);
                 
-                // Run user code
                 pyodide.runPython(code);
                 
-                // Get output
                 let stdout = pyodide.runPython("sys.stdout.getvalue()");
-                outputElement.innerText = stdout || "Execution finished with no output.";
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
                 
             } catch (err) {
-                // Handle Syntax errors / Exceptions cleanly
                 outputElement.innerText = err;
                 outputElement.classList.add("error");
             }
