@@ -184,11 +184,10 @@
 
     <header>
         <h2>සිංහලෙන් Python</h2>
-        <span class="lesson-badge">පාඩම 03 : විචල්‍ය (Variables)</span>
+        <span class="lesson-badge">පාඩම 03 : විචල්‍ය (Variables) සහ Input</span>
     </header>
 
     <div class="container">
-        <!-- Theory Panel -->
         <div class="lesson-panel">
             <h2>දත්ත ගබඩා කිරීම - Variables</h2>
             <p>Variable එකක් කියන්නේ හරියට <b>භාජනයක් (Container)</b> වගේ දෙයක්. අපිට අවශ්‍ය දත්තයක් (වචනයක් හෝ ඉලක්කමක්) කෙටි කාලයකට පරිගණකයේ ගබඩා කරලා තියාගන්න මේ භාජන පාවිච්චි කරනවා. තවත් විදිහකින් කිව්වොත්, මේක අපි දත්තයකට ලබා දෙන <b>නමක්</b>.</p>
@@ -207,26 +206,32 @@
                     <li>Python භාෂාවට ආවේණික විශේෂ වචන (<code>print</code>, <code>if</code> වැනි) නම් ලෙස භාවිතා කළ නොහැක.</li>
                 </ol>
             </div>
+
+            <hr style="border: 1px solid #eee; margin: 25px 0;">
+
+            <h2>පරිශීලකයාගෙන් දත්ත ලබා ගැනීම - input()</h2>
+            <p>අපිම කේතය ඇතුළේ දත්ත ලබා දෙනවාට වඩා, වැඩසටහන භාවිතා කරන කෙනාගෙන් (User) දත්තයක් ඉල්ලා සිටීමට <code>input()</code> ශ්‍රිතය භාවිතා කළ හැක. එම දත්තය කෙලින්ම Variable එකක ගබඩා කරගත හැක.</p>
+
+            <div class="info-box">
+                <b>උදාහරණ:</b><br>
+                <code>name = input("ඔබේ නම කුමක්ද? ")</code><br>
+                <code>print("ආයුබෝවන්", name)</code>
+            </div>
             
             <h3>ඔබේ අභ්‍යාසය 💻:</h3>
-            <p>Variables භාවිතයෙන් ඉලක්කම් සුළු කිරීමක් (ගණනය කිරීමක්) කරමු.</p>
             <ol>
-                <li><code>a</code> නමින් variable එකක් සාදා ඊට <b>45</b> ලබා දෙන්න.</li>
-                <li><code>b</code> නමින් තවත් variable එකක් සාදා ඊට <b>15</b> ලබා දෙන්න.</li>
-                <li>දැන් <code>total</code> නමින් අලුත් variable එකක් සාදා, ඊට ඉහත a සහ b හි <b>එකතුව</b> (a + b) සමාන කරන්න.</li>
-                <li>අවසානයේ <code>print(total)</code> භාවිතා කර අගය තිරයේ දිස්වීමට සලස්වන්න.</li>
+                <li><code>user_name</code> නමින් variable එකක් සාදන්න.</li>
+                <li>ඊට <code>input()</code> ශ්‍රිතය සමාන කර "ඔබේ නම ඇතුළත් කරන්න: " ලෙස අසන්න.</li>
+                <li>අවසානයේ <code>print()</code> භාවිතා කර එම නම තිරයේ දිස්වීමට සලස්වන්න. <i>('Run Code' එබූ විට ඉහළින් එන කොටුවේ නම Type කර 'OK' දෙන්න).</i></li>
             </ol>
 
             <div class="nav-buttons">
-                <!-- Links back to Lesson 2 -->
                 <a href="lesson2.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
                 
-                <!-- Links forward to Lesson 4 (lesson4.html) -->
                 <a href="lesson4.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
             </div>
         </div>
 
-        <!-- Code Editor Panel -->
         <div class="editor-panel">
             <div class="toolbar">
                 <span id="status">Python Loading... ⏳</span>
@@ -234,10 +239,8 @@
             </div>
             
             <textarea id="code">
-# ඔබේ Variables මෙහි සාදන්න
-a = 
-b = 
-total = 
+# ඔබේ නම ඉල්ලා සිටින්න
+user_name = 
 
 # පහළින් Print කරන්න
 
@@ -285,10 +288,20 @@ total =
             runBtn.disabled = true;
 
             try {
+                // Here we override Python's built-in input() to use JavaScript's prompt()
                 pyodide.runPython(`
 import sys
 import io
+import builtins
+from js import prompt
+
 sys.stdout = io.StringIO()
+
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+    
+builtins.input = custom_input
                 `);
                 
                 pyodide.runPython(code);
