@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | ගැටළුව 02</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--danger-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold;}
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lesson-panel {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important; 
+            font-size: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        .toolbar {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        button.run-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
+        .terminal {
+            flex: 0 0 180px; 
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 15px;
+            margin: 0;
+            border-top: 3px solid #333;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">ගැටළුව 02 : තරු (*) අකුරු</span>
+    </header>
+
+    <div class="container">
+        <div class="lesson-panel">
+            <h2>අලුත් උපක්‍රම 2ක් ඉගෙන ගනිමු 💡</h2>
+            
+            <div class="info-box">
+                <h3>1. print() හි සැඟවුණු රහස (end="")</h3>
+                <p>සාමාන්‍යයෙන් <code>print("*")</code> කියල දුන්නම, තාරකාව print වෙලා ඊළඟ දේ පටන් ගන්නේ අලුත් පේළියකිනුයි. හැබැයි අපිට තරු එක පෙළට (තිරස් අතට) ලියන්න ඕනේ නම්, අපි <code>print("*", end="")</code> ලෙස ලබා දිය යුතුය. මෙයින් අලුත් පේළියකට යෑම නවතී.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>2. Nested Loops (ලූප් ඇතුළේ ලූප්)</h3>
+                <p>පේළි (Rows) සහ තීරු (Columns) පාලනය කරන්න අපි Loop එකක් ඇතුළේ තවත් Loop එකක් ලියනවා. පිටතින් ඇති ලූප් එකෙන් "පේළිය" ද, ඇතුළත ඇති ලූප් එකෙන් එම පේළියේ ඇති "තීරු" ද පාලනය වේ.</p>
+            </div>
+
+            <h3>අභියෝගය: "A" අකුර අඳිමු! 🎨</h3>
+            <p>දකුණු පස ඇති කේතයේ අපි පේළි 7ක් සහ තීරු 5ක් (7x5) සඳහා Nested Loop එකක් හදා ඇත. ඔබ කළ යුත්තේ <code>if</code> Condition එක සම්පූර්ණ කිරීමයි.</p>
+            
+            <div class="rule-box">
+                <b>"A" අකුර සඳහා තරු වැටිය යුතු ස්ථාන:</b>
+                <ol style="margin-top: 5px;">
+                    <li>වම් සහ දකුණු කණු: තීරුව (col) 0 හෝ 4 වූ විට. <i>(නමුත් උඩම පේළිය (row 0) නොවිය යුතුය, නැතහොත් උඩින් කොටු වේ)</i></li>
+                    <li>හරස් රේඛා 2: පේළිය (row) 0 හෝ 3 වූ විට. <i>(මෙය මැද තීරු වලට පමණක් සීමා විය යුතුය, එනම් col > 0 සහ col < 4)</i></li>
+                </ol>
+            </div>
+
+            <p>පහත කේතයේ Comment කර ඇති කොටස් කියවා කේතය සම්පූර්ණ කර 'Run' කරන්න. හිර වුණොත් බයවෙන්න එපා, ඊළඟ පිටුවෙන් අපි විසඳුම පැහැදිලි කරමු!</p>
+
+            <div class="nav-buttons">
+                <!-- Links back to Solution 1 -->
+                <a href="problem1_solution.html" class="nav-btn">⬅️ පෙර විසඳුම</a>
+                <!-- Links forward to Solution 2 -->
+                <a href="problem2_solution.html" class="nav-btn">විසඳුම බලමු ➡️</a>
+            </div>
+        </div>
+
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# තරු වලින් 'A' අකුර අඳිමු
+
+for row in range(7):          # පේළි 7 ක් (0 සිට 6 දක්වා)
+    for col in range(5):      # තීරු 5 ක් (0 සිට 4 දක්වා)
+        
+        # ඔබගේ if condition එක මෙහි ලියන්න (or සහ and භාවිතා කරන්න)
+        if (  ):
+            print("*", end="")
+        else:
+            print(" ", end="") # තරු නැති තැන් වලට හිස්තැනක්
+            
+    # එක් පේළියක තීරු ටික අඳලා ඉවර වුණාම, අලුත් පේළියකට යන්න හිස් print එකක් දානවා
+    print()
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            fontSize: "16px"
+        });
+
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
+            }
+        }
+        setup();
+
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                pyodide.runPython(`
+import sys
+import io
+import builtins
+from js import prompt
+
+sys.stdout = io.StringIO()
+
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+builtins.input = custom_input
+                `);
+                
+                pyodide.runPython(code);
+                
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
+                
+            } catch (err) {
+                outputElement.innerText = str(err);
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
