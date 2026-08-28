@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | පාඩම 12</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--secondary-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lesson-panel {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important; 
+            font-size: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        .toolbar {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        button.run-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button.run-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
+        .terminal {
+            flex: 0 0 180px; 
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 15px;
+            margin: 0;
+            border-top: 3px solid #333;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">පාඩම 12 : Break සහ Continue</span>
+    </header>
+
+    <div class="container">
+        <!-- Theory Panel -->
+        <div class="lesson-panel">
+            <h2>Break සහ Continue යනු කුමක්ද?</h2>
+            <p>අපි Loop එකක් (For හෝ While) ක්‍රියාත්මක වෙමින් පවතින විට, එහි ගමන් මග අපට අවශ්‍ය පරිදි පාලනය කිරීමට මෙම විධානයන් දෙක භාවිතා කරමු.</p>
+            
+            <div class="info-box">
+                <h3>1. Break (සම්පූර්ණයෙන්ම නැවැත්වීම 🛑)</h3>
+                <p>හරියට කෝච්චියක හදිසි තිරිංග (Emergency Brake) ඇද්දා වගේ, <code>break</code> විධානය දුන් විගසම Loop එක සම්පූර්ණයෙන්ම ක්‍රියා විරහිත වී එයින් එළියට පැමිණේ.</p>
+                <pre style="margin: 5px 0; font-family: monospace; color: #d63384; font-size: 14px;">
+for i in range(1, 5):
+    if i == 3:
+        break
+    print(i)
+# ප්‍රතිඵලය: 1, 2 පමණක් print වේ. (3 දී නැවතී ඇත)
+                </pre>
+            </div>
+
+            <div class="rule-box">
+                <h3>2. Continue (මඟහැර යාම ⏭️)</h3>
+                <p>මෙමඟින් Loop එක සම්පූර්ණයෙන්ම නවත්වන්නේ නැත. ඒ වෙනුවට අදාළ වාරය (step) පමණක් මඟහැර (Skip කර) ඊළඟ වාරයට ගමන් කරයි.</p>
+                <pre style="margin: 5px 0; font-family: monospace; color: #d63384; font-size: 14px;">
+for j in range(1, 5):
+    if j == 3:
+        continue
+    print(j)
+# ප්‍රතිඵලය: 1, 2, 4 print වේ. (3 පමණක් මඟහැරී ඇත)
+                </pre>
+            </div>
+
+            <h3>ඔබේ අභ්‍යාස 💻:</h3>
+            <p>දකුණු පස ඇති කේතයේ හිස්තැන් පුරවා <code>break</code> සහ <code>continue</code> වල ක්‍රියාකාරීත්වය අත්හදා බලන්න.</p>
+
+            <div class="nav-buttons">
+                <!-- Links back to Lesson 11 -->
+                <a href="lesson11.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
+                <!-- Links forward to final page / next lesson -->
+                <a href="lesson13.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
+            </div>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# --- අභ්‍යාසය 1 (Break) ---
+# 1 සිට 10 දක්වා අංක print වීමට ඇත. 
+# නමුත් අගය 7 වූ විට loop එක නවත්වන්න (break).
+
+print("Break ප්‍රතිඵලය:")
+for x in range(1, 11):
+    if x == : # මෙතැන 7 යොදන්න
+        # මෙතැන break ලියන්න
+        
+    print(x)
+
+
+print("\n------------------\n")
+
+
+# --- අභ්‍යාසය 2 (Continue) ---
+# 1 සිට 5 දක්වා අංක print වීමට ඇත.
+# නමුත් අගය 3 වූ විට එය පමණක් මඟහරින්න (continue).
+
+print("Continue ප්‍රතිඵලය:")
+for y in range(1, 6):
+    if y == 3:
+        # මෙතැන continue ලියන්න
+        
+    print(y)
+
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            fontSize: "16px"
+        });
+
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
+                console.error(err);
+            }
+        }
+        setup();
+
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                // Setup Environment, Input Override, and Infinite Loop Guard
+                pyodide.runPython(`
+import sys
+import io
+import time
+import builtins
+from js import prompt
+
+# Terminal Output setup
+sys.stdout = io.StringIO()
+
+# Input override
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+builtins.input = custom_input
+
+# Infinite Loop Protection Setup
+class TimeoutError(Exception):
+    pass
+
+def trace_calls(frame, event, arg):
+    global start_time
+    if time.time() - start_time > 2.0:
+        raise TimeoutError("🚨 අනතුරු ඇඟවීමයි: Infinite Loop (නොනවතින ලූප්) එකක් හඳුනාගන්නා ලදී! ඔබ Variable එකෙහි අගය වෙනස් කිරීම (උදා: += 1) අමතක කර ඇත්දැයි පරීක්ෂා කරන්න.")
+    return trace_calls
+                `);
+                
+                // Start tracking time and run code
+                pyodide.runPython(`
+start_time = time.time()
+sys.settrace(trace_calls)
+                `);
+                
+                pyodide.runPython(code);
+                
+                // Stop tracking time
+                pyodide.runPython(`sys.settrace(None)`);
+                
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
+                
+            } catch (err) {
+                // Clear the trace just in case it crashed mid-execution
+                pyodide.runPython(`sys.settrace(None)`);
+                outputElement.innerText = err;
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
