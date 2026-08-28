@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | පාඩම 09</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--secondary-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lesson-panel {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Locked Button Styling */
+        .locked-btn {
+            background: #adb5bd !important;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none !important;
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important; 
+            font-size: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        .toolbar {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        button.run-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button.run-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
+        .terminal {
+            flex: 0 0 180px; 
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 15px;
+            margin: 0;
+            border-top: 3px solid #333;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">පාඩම 09 : පුනරාවර්තනය (Loops)</span>
+    </header>
+
+    <div class="container">
+        <!-- Theory Panel -->
+        <div class="lesson-panel">
+            <h2>පහසු ක්‍රමය ඉගෙනගන්න කලින්... 🔨</h2>
+            <p>දකුණු පස ඇති කේත සංස්කාරකයේ, <code>print()</code> ශ්‍රිතය භාවිතා කර <b>1 සිට 10 දක්වා අංක එකින් එක පහළට</b> Print කරන්න. <br><i>(උදා: print(1), print(2) ආදී වශයෙන් පේළි 10ක් අතින් ලියන්න).</i></p>
+            
+            <div class="rule-box">
+                <b>🔒 අභියෝගය:</b> මෙම අභ්‍යාසය නිවැරදිව අවසන් කර 'Run Code' එබූ පසු පමණක් ඔබට මීළඟ පාඩමට යාමට ඇති බොත්තම විවෘත වනු ඇත!
+            </div>
+
+            <hr style="border: 1px solid #eee; margin: 25px 0;">
+
+            <h2>ඇයි අපිට මේක අමාරු?</h2>
+            <p>දැන් හිතන්න මම ඔබට කිව්වොත් <b>1 ඉඳන් 1000 වෙනකන්</b> Print කරන්න කියලා? පේළි 1000ක් අතින් ලියන එක කොච්චර නම් මහන්සි වෙන, එපා වෙන වැඩක්ද නේද?</p>
+            
+            <p>මෙන්න මේ වගේ එකම වැඩේ නැවත නැවත කරන්න තියෙනකොට, අපි පරිගණකයට දෙන ලේසිම ක්‍රමය තමයි <b>Loops (පුනරාවර්තනය)</b> කියන්නේ.</p>
+
+            <div class="info-box">
+                <h3>Python හි ප්‍රධාන Loops වර්ග 2කි:</h3>
+                <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                    <li><b>For Loop:</b> හරියටම වාර ගණනක් යමක් කිරීමට හෝ (අපි පෙර පාඩමේ ඉගෙනගත්) List එකක ඇති දත්ත එකින් එක කියවීමට මෙය භාවිතා කරයි.
+                        <br><code style="display:block; margin-top:5px;">for i in range(1, 11):<br>&nbsp;&nbsp;&nbsp;&nbsp;print(i)</code>
+                    </li>
+                    <li style="margin-top: 10px;"><b>While Loop:</b> යම්කිසි කොන්දේසියක් සත්‍ය වන තාක් කල් දිගටම යමක් කිරීමට මෙය භාවිතා කරයි.</li>
+                </ol>
+            </div>
+            
+            <p>ඔබ ඉහත අභියෝගය ජයගත් පසු, ඊළඟ පාඩමෙන් අපි මේ Loops ඔබේ කේතය තුළ ප්‍රායෝගිකව භාවිතා කරමු!</p>
+
+            <div class="nav-buttons">
+                <!-- Links back to Lesson 8 -->
+                <a href="lesson8.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
+                
+                <!-- Locked Next Button -->
+                <a href="lesson10.html" id="nextBtn" class="nav-btn locked-btn">ඊළඟ පාඩමට ➡️ (Locked)</a>
+            </div>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# 1 සිට 10 දක්වා පහළින් print කරන්න
+print(1)
+print(2)
+
+
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            fontSize: "16px"
+        });
+
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
+                console.error(err);
+            }
+        }
+        setup();
+
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                // Modified with input() override for consistency
+                pyodide.runPython(`
+import sys
+import io
+import builtins
+from js import prompt
+
+sys.stdout = io.StringIO()
+
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+    
+builtins.input = custom_input
+                `);
+                
+                pyodide.runPython(code);
+                
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
+                
+                // --- Unlock Logic Starts Here ---
+                // Spaces and new lines are removed to strictly check the exact sequence of numbers
+                let cleanOutput = stdout.replace(/\\s+/g, '');
+                
+                // If output matches exactly 1 to 10
+                if (cleanOutput === "12345678910") {
+                    let nextBtn = document.getElementById("nextBtn");
+                    nextBtn.classList.remove("locked-btn");
+                    nextBtn.innerText = "ඊළඟ පාඩමට ➡️";
+                    
+                    outputElement.innerText += "\\n\\n🎉 නියමයි! ඔබ අභියෝගය ජය ගත්තා. දැන් 'ඊළඟ පාඩමට' බොත්තම ඔබන්න.";
+                    outputElement.style.color = "#00ff00";
+                }
+                
+            } catch (err) {
+                outputElement.innerText = err;
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
