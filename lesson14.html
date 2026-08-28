@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | පාඩම 14</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--secondary-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lesson-panel {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important; 
+            font-size: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        .toolbar {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        button.run-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button.run-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
+        .terminal {
+            flex: 0 0 180px; 
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 15px;
+            margin: 0;
+            border-top: 3px solid #333;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">පාඩම 14 : Strings වල විශේෂ උපක්‍රම</span>
+    </header>
+
+    <div class="container">
+        <!-- Theory Panel -->
+        <div class="lesson-panel">
+            <h2>Strings එකතු කිරීම සහ ගුණ කිරීම (+ සහ *)</h2>
+            <p>Python වල ඉලක්කම් වගේම වචනත් (Strings) එකට එකතු කරන්න වගේම ගුණ කරන්නත් පුළුවන්! මෙය ඉතා ප්‍රයෝජනවත් උපක්‍රමයකි.</p>
+            
+            <div class="info-box">
+                <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                    <li><b>එකතු කිරීම (Concatenation):</b> <code>+</code> ලකුණ භාවිතා කර වචන දෙකක් ඈඳිය හැක.<br><code>print("Hello" + "World")</code> ➔ HelloWorld</li>
+                    <li><b>ගුණ කිරීම (Repetition):</b> <code>*</code> ලකුණ භාවිතා කර වචනයක් කිහිප වතාවක් අනුක්‍රමණය කළ හැක.<br><code>print("Ha" * 3)</code> ➔ HaHaHa</li>
+                </ul>
+            </div>
+
+            <hr style="border: 1px solid #eee; margin: 25px 0;">
+
+            <h2>ඉතා වැදගත් String Methods</h2>
+            <p>Strings වෙනස් කරන්න බැරි (Immutable) වුණාට, ඒකේ තියෙන අකුරු වල හැඩය මාරු කරලා අලුත් වචනයක් විදිහට ගන්න අපිට Methods පාවිච්චි කරන්න පුළුවන්.</p>
+
+            <div class="rule-box">
+                <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                    <li><b><code>.upper()</code></b> : සියලුම අකුරු Capital (විශාල) කරයි.<br><code>print("python".upper())</code> ➔ PYTHON</li>
+                    <li><b><code>.lower()</code></b> : සියලුම අකුරු Simple (කුඩා) කරයි.<br><code>print("PYTHON".lower())</code> ➔ python</li>
+                    <li><b><code>.replace()</code></b> : වචනයක් ඇතුළේ තියෙන අකුරක් වෙනුවට වෙනත් අකුරක් ආදේශ කරයි.<br><code>print("Cat".replace("C", "B"))</code> ➔ Bat</li>
+                    <li><b><code>.split()</code></b> : වාක්‍යයක් කෑලි වලට කඩා List එකක් බවට පත් කරයි.<br><code>print("A,B,C".split(","))</code> ➔ ['A', 'B', 'C']</li>
+                </ul>
+            </div>
+
+            <h3>ඔබේ අභ්‍යාස 💻:</h3>
+            <p>දකුණු පස කේත සංස්කාරකයේ අභ්‍යාස 4ම සම්පූර්ණ කර 'Run Code' ඔබන්න.</p>
+
+            <div class="nav-buttons">
+                <!-- Links back to Lesson 13 -->
+                <a href="lesson13.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
+                <!-- Links forward to Lesson 15 -->
+                <a href="lesson15.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
+            </div>
+        </div>
+
+        <!-- Code Editor Panel -->
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# --- අභ්‍යාසය 1 (+) ---
+word1 = "Software"
+word2 = "Engineer"
+# වචන දෙක අතරට හිස්තැනක් (Space) ද සහිතව එකතු කර print කරන්න.
+print( )
+
+
+# --- අභ්‍යාසය 2 (*) ---
+# "Python " යන වචනය 5 වතාවක් print වීමට සලස්වන්න.
+print( )
+
+
+# --- අභ්‍යාසය 3 (upper / lower) ---
+msg = "hello sri lanka"
+# msg හි ඇති සියලුම අකුරු Capital කර print කරන්න.
+print( )
+
+
+# --- අභ්‍යාසය 4 (replace) ---
+sentence = "I love Java"
+# 'Java' වෙනුවට 'Python' ලෙස replace කර print කරන්න.
+print( )
+
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            fontSize: "16px"
+        });
+
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
+                console.error(err);
+            }
+        }
+        setup();
+
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                // Setup Environment, Input Override, and Infinite Loop Guard
+                pyodide.runPython(`
+import sys
+import io
+import time
+import builtins
+from js import prompt
+
+# Terminal Output setup
+sys.stdout = io.StringIO()
+
+# Input override
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+builtins.input = custom_input
+
+# Infinite Loop Protection Setup
+class TimeoutError(Exception):
+    pass
+
+def trace_calls(frame, event, arg):
+    global start_time
+    if time.time() - start_time > 2.0:
+        raise TimeoutError("🚨 අනතුරු ඇඟවීමයි: Infinite Loop (නොනවතින ලූප්) එකක් හඳුනාගන්නා ලදී!")
+    return trace_calls
+                `);
+                
+                // Start tracking time and run code
+                pyodide.runPython(`
+start_time = time.time()
+sys.settrace(trace_calls)
+                `);
+                
+                pyodide.runPython(code);
+                
+                // Stop tracking time
+                pyodide.runPython(`sys.settrace(None)`);
+                
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
+                
+            } catch (err) {
+                // Clear the trace just in case it crashed mid-execution
+                pyodide.runPython(`sys.settrace(None)`);
+                outputElement.innerText = str(err);
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
