@@ -184,54 +184,56 @@
 
     <header>
         <h2>සිංහලෙන් Python</h2>
-        <span class="lesson-badge">පාඩම 03 : විචල්‍ය (Variables) සහ Input</span>
+        <span class="lesson-badge">පාඩම 03 : විචල්‍ය (Variables) සහ Type Casting</span>
     </header>
 
     <div class="container">
+        <!-- Theory Panel -->
         <div class="lesson-panel">
             <h2>දත්ත ගබඩා කිරීම - Variables</h2>
-            <p>Variable එකක් කියන්නේ හරියට <b>භාජනයක් (Container)</b> වගේ දෙයක්. අපිට අවශ්‍ය දත්තයක් (වචනයක් හෝ ඉලක්කමක්) කෙටි කාලයකට පරිගණකයේ ගබඩා කරලා තියාගන්න මේ භාජන පාවිච්චි කරනවා. තවත් විදිහකින් කිව්වොත්, මේක අපි දත්තයකට ලබා දෙන <b>නමක්</b>.</p>
+            <p>Variable එකක් කියන්නේ හරියට <b>භාජනයක් (Container)</b> වගේ දෙයක්. අපිට අවශ්‍ය දත්තයක් කෙටි කාලයකට පරිගණකයේ ගබඩා කරලා තියාගන්න මේ භාජන පාවිච්චි කරනවා.</p>
             
-            <div class="info-box">
-                <b>උදාහරණ:</b><br>
-                <code>item = "පොත"</code> (වචන ගබඩා කරන විට උද්ධෘත ලකුණු "" අවශ්‍යයි)<br><br>
-                <code>price = 250</code> (ඉලක්කම් ගබඩා කරන විට උද්ධෘත ලකුණු අවශ්‍ය නැත)
-            </div>
-
-            <h3>මූලික නීති (Rules for Variables):</h3>
-            <div class="rule-box">
-                <ol style="margin: 0; padding-left: 20px;">
-                    <li style="margin-bottom: 10px;">නම ආරම්භ විය යුත්තේ ඉංග්‍රීසි අකුරකින් හෝ underscore (<code>_</code>) පමණි. ඉලක්කමකින් පටන් ගත නොහැක. <br>(උදා: <code>1st_number</code> ❌ වැරදියි, <code>number_1</code> ✅ නිවැරදියි).</li>
-                    <li style="margin-bottom: 10px;">නම මැද හිස්තැන් (Spaces) තැබිය නොහැක. වචන වෙන් කිරීමට underscore (<code>_</code>) භාවිතා කරන්න. <br>(උදා: <code>my age</code> ❌ වැරදියි, <code>my_age</code> ✅ නිවැරදියි).</li>
-                    <li>Python භාෂාවට ආවේණික විශේෂ වචන (<code>print</code>, <code>if</code> වැනි) නම් ලෙස භාවිතා කළ නොහැක.</li>
-                </ol>
-            </div>
-
-            <hr style="border: 1px solid #eee; margin: 25px 0;">
-
             <h2>පරිශීලකයාගෙන් දත්ත ලබා ගැනීම - input()</h2>
-            <p>අපිම කේතය ඇතුළේ දත්ත ලබා දෙනවාට වඩා, වැඩසටහන භාවිතා කරන කෙනාගෙන් (User) දත්තයක් ඉල්ලා සිටීමට <code>input()</code> ශ්‍රිතය භාවිතා කළ හැක. එම දත්තය කෙලින්ම Variable එකක ගබඩා කරගත හැක.</p>
+            <p>අපිම කේතය ඇතුළේ දත්ත ලබා දෙනවාට වඩා, වැඩසටහන භාවිතා කරන කෙනාගෙන් (User) දත්තයක් ඉල්ලා සිටීමට <code>input()</code> ශ්‍රිතය භාවිතා කළ හැක.</p>
+
+            <div class="rule-box">
+                <b>🚨 ඉතා වැදගත් (Type Casting):</b><br>
+                <code>input()</code> ශ්‍රිතයෙන් ලබාගන්නා ඕනෑම දෙයක් Python භාරගන්නේ <b>String එකක් (වචනයක් හෝ අකුරු)</b> ලෙසයි. ඔබ වයස ලෙස <code>18</code> ලබා දුන්නත්, පරිගණකය එය දකින්නේ <code>"18"</code> ලෙසයි. එබැවින් වචන යොදාගෙන ගණනය කිරීම් (එකතු කිරීම්, අඩු කිරීම්) කළ නොහැක!
+            </div>
+
+            <p>ගණනය කිරීම් කිරීමට පෙර එම වචනය <b>අංකයක් (Number)</b> බවට පත් කළ යුතුය. මේ සඳහා අපි දත්ත වර්ගය වෙනස් කිරීම හෙවත් <b>Type Casting</b> භාවිතා කරමු.</p>
+            <ul style="line-height: 1.7;">
+                <li><code>int()</code> : පූර්ණ සංඛ්‍යා (නිඛිල) බවට පත් කිරීමට. (උදා: 10, -5, 2026)</li>
+                <li><code>float()</code> : දශම සංඛ්‍යා බවට පත් කිරීමට. (උදා: 10.5, 3.14)</li>
+            </ul>
 
             <div class="info-box">
                 <b>උදාහරණ:</b><br>
-                <code>name = input("ඔබේ නම කුමක්ද? ")</code><br>
-                <code>print("ආයුබෝවන්", name)</code>
+                <code>age_str = input("වයස කීයද? ")</code><br>
+                <code>age = int(age_str)</code> <i>(මෙහිදී වචනය අංකයක් බවට පත් වේ)</i><br><br>
+                <b>කෙටි ක්‍රමය (එක පේළියෙන්):</b><br>
+                <code>age = int(input("වයස කීයද? "))</code>
             </div>
             
             <h3>ඔබේ අභ්‍යාසය 💻:</h3>
+            <p>අපි දැන් පරිශීලකයාගේ උපන් වර්ෂය අසා, ඔහුගේ වයස ගණනය කරමු.</p>
             <ol>
-                <li><code>user_name</code> නමින් variable එකක් සාදන්න.</li>
-                <li>ඊට <code>input()</code> ශ්‍රිතය සමාන කර "ඔබේ නම ඇතුළත් කරන්න: " ලෙස අසන්න.</li>
-                <li>අවසානයේ <code>print()</code> භාවිතා කර එම නම තිරයේ දිස්වීමට සලස්වන්න. <i>('Run Code' එබූ විට ඉහළින් එන කොටුවේ නම Type කර 'OK' දෙන්න).</i></li>
+                <li><code>birth_year</code> නමින් variable එකක් සාදා <code>input()</code> මගින් උපන් වර්ෂය ඉල්ලන්න.</li>
+                <li>එම අගය <code>int()</code> භාවිතා කර අංකයක් බවට පත් කරන්න.</li>
+                <li><code>age = 2026 - birth_year</code> ලෙස වයස ගණනය කරන්න.</li>
+                <li>අවසානයේ <code>print("ඔබේ වයස:", age)</code> ලෙස පෙන්වන්න. <i>('Run Code' එබූ විට ඉහළින් එන කොටුවේ වර්ෂය Type කර 'OK' දෙන්න).</i></li>
             </ol>
 
             <div class="nav-buttons">
+                <!-- Links back to Lesson 2 -->
                 <a href="lesson2.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
                 
+                <!-- Links forward to Lesson 4 -->
                 <a href="lesson4.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
             </div>
         </div>
 
+        <!-- Code Editor Panel -->
         <div class="editor-panel">
             <div class="toolbar">
                 <span id="status">Python Loading... ⏳</span>
@@ -239,10 +241,13 @@
             </div>
             
             <textarea id="code">
-# ඔබේ නම ඉල්ලා සිටින්න
-user_name = 
+# 1. උපන් වර්ෂය ඉල්ලා අංකයක් (int) බවට පත් කරන්න
+birth_year = 
 
-# පහළින් Print කරන්න
+# 2. වයස ගණනය කරන්න (වත්මන් වසර 2026 ලෙස සිතන්න)
+age = 
+
+# 3. වයස Print කරන්න
 
             </textarea>
             
@@ -310,7 +315,11 @@ builtins.input = custom_input
                 outputElement.innerText = stdout || "Execution finished. (No output printed)";
                 
             } catch (err) {
-                outputElement.innerText = err;
+                // Type Error custom hint for better learning
+                outputElement.innerText = str(err);
+                if(outputElement.innerText.includes("TypeError") && outputElement.innerText.includes("unsupported operand type(s) for -")) {
+                    outputElement.innerText += "\n\n💡 ඉඟිය: ඔබ වර්ෂය අංකයක් (int) බවට පත් කිරීමට අමතක කර ඇති බව පෙනේ. input() එක වටා int() යෙදීමට මතක තබාගන්න!";
+                }
                 outputElement.classList.add("error");
             }
             
