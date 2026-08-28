@@ -301,11 +301,21 @@ numbers = [10, 20, 30]
             outputElement.classList.remove("error");
             runBtn.disabled = true;
 
-            try {
+          try {
+                // Here we override Python's built-in input() to use JavaScript's prompt()
                 pyodide.runPython(`
 import sys
 import io
+import builtins
+from js import prompt
+
 sys.stdout = io.StringIO()
+
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+    
+builtins.input = custom_input
                 `);
                 
                 pyodide.runPython(code);
