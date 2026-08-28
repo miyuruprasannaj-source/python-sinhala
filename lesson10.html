@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python ඉගෙන ගනිමු | පාඩම 10</title>
+    
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --primary-color: #0056b3;
+            --secondary-color: #007bff;
+            --success-color: #28a745;
+            --header-bg: #1a252f;
+            --panel-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        header {
+            background: var(--header-bg);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        
+        header h2 { margin: 0; font-size: 22px; font-weight: 600; }
+        .lesson-badge { background: var(--secondary-color); padding: 5px 12px; border-radius: 20px; font-size: 14px; }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lesson-panel {
+            flex: 1.2;
+            min-width: 350px;
+            padding: 30px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+            background: var(--panel-bg);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        
+        .lesson-panel h2 { color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .info-box {
+            background: #eef5ff;
+            border-left: 5px solid var(--secondary-color);
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .rule-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #d63384;
+            border: 1px solid #ddd;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 2px dashed #eee;
+        }
+        
+        .nav-btn {
+            text-decoration: none;
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: #004494;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .editor-panel {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+            overflow: hidden;
+        }
+        
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important; 
+            font-size: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        
+        .toolbar {
+            background: #2d2d2d;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        button.run-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        button.run-btn:disabled { background: #6c757d; cursor: not-allowed; }
+        button.run-btn:hover:not(:disabled) { background: #218838; }
+        
+        #status { color: #ffc107; font-size: 14px; font-weight: 500; }
+        
+        .terminal {
+            flex: 0 0 180px; 
+            height: 180px;
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            overflow-y: auto;
+            font-size: 15px;
+            margin: 0;
+            border-top: 3px solid #333;
+        }
+        .error { color: #ff4c4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>සිංහලෙන් Python</h2>
+        <span class="lesson-badge">පාඩම 10 : For Loop</span>
+    </header>
+
+    <div class="container">
+        <div class="lesson-panel">
+            <h2>For Loop එකක් යනු කුමක්ද?</h2>
+            <p>එකම කේතය (Code) නැවත නැවත කිහිප වතාවක් ක්‍රියාත්මක කිරීමට අවශ්‍ය වූ විට අපි <b>For Loop</b> එකක් භාවිතා කරමු. විශේෂයෙන්ම අපි පෙර පාඩමේ ඉගෙනගත් <b>List එකක ඇති දත්ත</b> එකින් එක පහසුවෙන් එළියට ගැනීමට මෙය ඉතා ප්‍රයෝජනවත් වේ.</p>
+            
+            <h3>1. List එකක් සමඟ For Loop භාවිතා කිරීම:</h3>
+            <div class="info-box">
+                <pre style="margin: 0; font-family: monospace; color: #d63384; font-size: 15px;">
+fruits = ["Apple", "Mango", "Banana"]
+
+for item in fruits:
+    print(item)
+                </pre>
+                <p style="margin-top: 10px; font-size: 14px; color: #555;"><i>පැහැදිලි කිරීම: මෙහි <code>item</code> යනු තාවකාලික නමකි (Variable). Loop එක කැරකෙන සෑම වාරයකදීම List එකේ ඇති ඊළඟ පලතුරේ නම මෙම <code>item</code> එකට ස්වයංක්‍රීයව ඇතුළත් වේ.</i></p>
+            </div>
+
+            <hr style="border: 1px solid #eee; margin: 25px 0;">
+
+            <h3>2. range() ශ්‍රිතය භාවිතා කිරීම:</h3>
+            <p>අපිට List එකක් නැතිව, නිකම්ම යම් වැඩක් නිශ්චිත වාර ගණනක් කරන්න ඕනේ නම් <b>range()</b> ශ්‍රිතය භාවිතා කළ හැක.</p>
+            
+            <div class="info-box">
+                <pre style="margin: 0; font-family: monospace; color: #d63384; font-size: 15px;">
+for i in range(1, 6):
+    print(i)
+                </pre>
+                <p style="margin-top: 10px; font-size: 14px; color: #555;"><i>සැලකිය යුතුයි: <code>range(1, 6)</code> ලෙස දුන් විට එය 1 සිට 5 දක්වා පමණක් ගණනය කරයි (අවසාන අගයට පෙර අගයෙන් නතර වේ).</i></p>
+            </div>
+
+            <div class="rule-box">
+                <b>වැදගත් නීතිය (Indentation):</b> <code>for</code> පේළිය අවසානයේ කෝලන් ලකුණ (<code>:</code>) අනිවාර්ය වන අතර, ඊට යටින් ලියන කේතය Tab එකක් (හිස්තැන් 4ක්) ඇතුළට වන්නට ලිවිය යුතුය.
+            </div>
+            
+            <h3>ඔබේ අභ්‍යාස 💻:</h3>
+            <p>දකුණු පස කේත සංස්කාරකයේ ඇති අභ්‍යාස 3ම සම්පූර්ණ කර 'Run Code' ඔබන්න.</p>
+
+            <div class="nav-buttons">
+                <a href="lesson9.html" class="nav-btn">⬅️ පෙර පාඩමට</a>
+                
+                <a href="lesson11.html" class="nav-btn">ඊළඟ පාඩමට ➡️</a>
+            </div>
+        </div>
+
+        <div class="editor-panel">
+            <div class="toolbar">
+                <span id="status">Python Loading... ⏳</span>
+                <button id="runBtn" class="run-btn" onclick="executePython()" disabled>▶ Run Code</button>
+            </div>
+            
+            <textarea id="code">
+# --- අභ්‍යාසය 1 ---
+# පහත List එකේ ඇති සතුන්ගේ නම් For Loop එකක් හරහා print කරන්න.
+animals = ["Cat", "Dog", "Elephant"]
+
+
+
+
+
+# --- අභ්‍යාසය 2 ---
+# range() ශ්‍රිතය භාවිතා කර 1 සිට 10 දක්වා අංක print කරන්න.
+# (ඔබ පෙර පාඩමේ අමාරුවෙන් කළ දේ දැන් පහසුවෙන් කරන්න!)
+
+
+
+
+
+# --- අභ්‍යාසය 3 ---
+# පහත List එකේ ඇති නම් සඳහා "Hello නම" ලෙස print කරන්න.
+# උදාහරණ: print("Hello", name)
+friends = ["Kasun", "Amal", "Nimal"]
+
+
+
+
+            </textarea>
+            
+            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+        </div>
+    </div>
+
+    <script>
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            mode: "python",
+            theme: "monokai",
+            lineNumbers: true,
+            indentUnit: 4,
+            matchBrackets: true,
+            fontSize: "16px"
+        });
+
+        let pyodideReadyPromise = loadPyodide();
+        
+        async function setup() {
+            try {
+                window.pyodide = await pyodideReadyPromise;
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Python Ready ✔️";
+                statusMsg.style.color = "#28a745";
+                document.getElementById("runBtn").disabled = false;
+            } catch (err) {
+                let statusMsg = document.getElementById("status");
+                statusMsg.innerText = "Error loading Python!";
+                statusMsg.style.color = "#ff4c4c";
+                console.error(err);
+            }
+        }
+        setup();
+
+        async function executePython() {
+            let code = editor.getValue();
+            let outputElement = document.getElementById("output");
+            let runBtn = document.getElementById("runBtn");
+            
+            outputElement.innerText = "Running...";
+            outputElement.classList.remove("error");
+            runBtn.disabled = true;
+
+            try {
+                // Here we override Python's built-in input() to use JavaScript's prompt()
+                pyodide.runPython(`
+import sys
+import io
+import builtins
+from js import prompt
+
+sys.stdout = io.StringIO()
+
+def custom_input(p=""):
+    val = prompt(p)
+    return val if val is not None else ""
+    
+builtins.input = custom_input
+                `);
+                
+                pyodide.runPython(code);
+                
+                let stdout = pyodide.runPython("sys.stdout.getvalue()");
+                outputElement.innerText = stdout || "Execution finished. (No output printed)";
+                
+            } catch (err) {
+                outputElement.innerText = err;
+                outputElement.classList.add("error");
+            }
+            
+            runBtn.disabled = false;
+        }
+    </script>
+</body>
+</html>
