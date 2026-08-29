@@ -52,8 +52,10 @@
 
         .container {
             display: flex;
+            flex-direction: row;
             flex: 1;
             overflow: hidden;
+            width: 100%;
         }
 
         .lesson-panel {
@@ -61,7 +63,7 @@
             min-width: 350px;
             padding: 30px;
             overflow-y: auto;
-            border-right: 1px solid #e0e0e0;
+            border-right: 2px solid #ddd;
             background: var(--panel-bg);
             line-height: 1.7;
             font-size: 16px;
@@ -165,8 +167,7 @@
         #status { color: #ffc107; font-size: 14px; font-weight: 500; }
         
         .terminal {
-            flex: 0 0 180px; 
-            height: 180px;
+            flex: 0 0 220px; 
             background: #0c0c0c;
             color: #00ff00;
             padding: 15px;
@@ -243,7 +244,17 @@ for row in range(7):          # පේළි 7 ක් (0 සිට 6 දක්�
     print()
             </textarea>
             
-            <pre class="terminal" id="output">Terminal සූදානම්...</pre>
+            <pre class="terminal" id="output">Terminal සූදානම්...
+බලාපොරොත්තු වන ප්‍රතිඵලය:
+
+ *** 
+*   *
+*   *
+*****
+*   *
+*   *
+*   *
+</pre>
         </div>
     </div>
 
